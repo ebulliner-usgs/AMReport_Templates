@@ -1,0 +1,86 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Scatter:
+
+```{r, echo=FALSE}
+
+xdata <- xdf$x1
+ydata <- xdf$y
+title <- "Sample Title"
+
+out <- paste("Scatter.pdf")
+pdf(out,width=11,height=7.5) # width and height of pdf
+
+
+mar.default <- c(5,4,4,2) + 0.1
+par(mar = mar.default + c(0, 2, 0, 0), family='serif') 
+
+
+
+plot(xdata,ydata,
+    tck=0.02,col=rgb(1,0,0,1),
+    pch=19,
+    xlab=xlabel,
+    ylab=ylabel,
+    las=1,
+
+    font=1,
+    cex.lab=2,
+    cex.axis=1.5)
+axis(4,tck=0.02,labels=FALSE)
+axis(3,tck=0.02,labels=FALSE)
+
+
+title(main=title,adj=0,font=2,cex.main=3)
+
+dev.off() # release device
+
+
+
+```
+
+
+Scatter with legend:
+
+
+
+```{r, echo=FALSE}
+
+x1data <- xdf$x1
+x2data <- xdf$x2
+ydata <- xdf$y
+title <- "Sample Title"
+
+out <- paste("Scatter.pdf")
+pdf(out,width=11,height=7.5) # width and height of pdf
+
+
+mar.default <- c(5,4,4,2) + 0.1
+par(mar = mar.default + c(0, 2, 0, 0), family='serif') 
+
+
+
+plot(c(x1data,x2data),ydata,
+    tck=0.02,col=rgb(1,0,0,1),
+    pch=19,
+    xlab=xlabel,
+    ylab=ylabel,
+    las=1,
+
+    font=1,
+    cex.lab=2,
+    cex.axis=1.5)
+axis(4,tck=0.02,labels=FALSE)
+axis(3,tck=0.02,labels=FALSE)
+
+
+title(main=title,adj=0,font=2,cex.main=3)
+
+dev.off() # release device
+
+
+
+```

@@ -1,0 +1,518 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
+```
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(plyr)
+```
+
+
+Generate some sample data
+
+```{r}
+
+x1 <- sample.int(100,10)
+x2 <- sample.int(100,10)+20
+
+
+y <- sample.int(100,10)
+
+
+x3 <- sample.int(100,20)
+x4 <- sample.int(100,20)+20
+treatment <- append(rep("A",10),rep("B",10))
+
+index = array(1:10)
+
+
+xdf0 <- data.frame(x1,y)
+xdf1 <- data.frame(x1,x2,y)
+xdf2 <- data.frame(x1,x2)
+xdf3 <- data.frame(x3,x4,treatment)
+xdf4 <- data.frame(index,x1)
+xdf5 <- data.frame(index,x1,x2)
+
+x1label = 'Sample X Data'
+x2label = 'Sample X2 Data'
+ylabel = 'Sample Y Data'
+
+
+
+```
+
+
+
+```{r}
+
+
+# Input data ####################################
+indata <- xdf0
+
+fname <- 'Scatter.pdf'
+title <- 'Sample title'
+
+xlabel <- 'Sample X Data'
+ylabel <- 'Sample Y Data'
+
+#################################################
+
+
+
+
+out <- paste(fname)
+pdf(out,width=7.5,height=5)
+
+gg = ggplot(indata, aes_string(x=colnames(indata)[1], y = colnames(indata)[2])) + geom_point()
+
+gg <- gg + theme_bw() + 
+          theme(panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                axis.line = element_line(colour = "black"))
+
+gg <- gg + theme(axis.ticks.length=unit(-0.25, "cm"), 
+                 axis.text.x = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")), 
+                 axis.text.y = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")),
+                 text=element_text(size=18))
+
+
+gg <- gg + scale_x_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
+gg <- gg + scale_y_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
+
+gg <- gg + theme(plot.margin=margin(1,2,0.5,0.5,"cm"))
+
+
+gg <- gg + ggtitle(title) + xlab(xlabel) + ylab(ylabel)
+
+gg <- gg + theme(plot.title=element_text(vjust=3,face="bold",size=24))
+
+gg
+
+dev.off()
+
+```
+
+
+```{r}
+
+
+# Input data ####################################
+indata <- xdf1 %>%
+  gather(classname,classval,-y)
+
+
+fname <- 'Scatter2.pdf'
+title <- 'Sample title'
+
+xlabel <- 'Sample X Data'
+ylabel <- 'Sample Y Data'
+
+#################################################
+
+
+
+out <- paste(fname)
+pdf(out,width=7.5,height=5)
+
+gg = ggplot(indata, aes(x = classval, y = y,color=classname)) + geom_point()
+
+gg <- gg + theme_bw() + 
+          theme(panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                axis.line = element_line(colour = "black"))
+
+gg <- gg + theme(axis.ticks.length=unit(-0.25, "cm"), 
+                 axis.text.x = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")), 
+                 axis.text.y = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")),
+                 text=element_text(size=18))
+
+
+gg <- gg + scale_x_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
+gg <- gg + scale_y_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
+
+gg <- gg + theme(plot.margin=margin(1,0,0.5,0.5,"cm"))
+
+
+gg <- gg + ggtitle(title) + xlab(xlabel) + ylab(ylabel)
+
+gg <- gg + theme(plot.title=element_text(vjust=3,face="bold",size=24))
+
+gg
+
+dev.off()
+
+```
+
+Box plot with one per class
+
+```{r}
+
+
+# Input data ####################################
+indata <- xdf2 %>%
+  gather(classname,classval)
+
+
+fname <- 'Box.pdf'
+title <- 'Sample title'
+
+xlabel <- 'Sample X Data'
+ylabel <- 'Sample Y Data'
+
+#################################################
+
+
+out <- paste(fname)
+pdf(out,width=7.5,height=5)
+
+labels <- unique(indata$classname)
+labeldf <- data.frame("classname"=labels,"labelind"=array(1:length(labels)))
+indata <- merge(indata,labeldf,by="classname")
+
+gg = ggplot(indata, aes(x = labelind, y = classval,group=labelind)) + geom_boxplot()
+
+gg <- gg + theme_bw() + 
+          theme(panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                axis.line = element_line(colour = "black"))
+
+gg <- gg + theme(axis.ticks.length=unit(-0.25, "cm"), 
+                 axis.text.x = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")), 
+                 axis.text.y = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")),
+                 text=element_text(size=18))
+
+
+
+gg <- gg + scale_x_continuous(breaks=unique(indata$labelind),
+                              labels=labels,
+                              sec.axis = dup_axis(labels=NULL,name = waiver()))
+gg <- gg + scale_y_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
+
+gg <- gg + theme(plot.margin=margin(1,1,0.5,0.5,"cm"))
+
+
+gg <- gg + ggtitle(title) + xlab(xlabel) + ylab(ylabel)
+
+gg <- gg + theme(plot.title=element_text(vjust=3,face="bold",size=24))
+
+gg
+
+
+dev.off()
+
+```
+
+Box plot with 2 per class
+
+```{r}
+
+
+# Input data ####################################
+indata <- xdf3 %>%
+  gather(classname,classval,-treatment)
+
+
+fname <- 'Box2.pdf'
+title <- 'Sample title'
+
+xlabel <- 'Sample X Data'
+ylabel <- 'Sample Y Data'
+
+#################################################
+
+out <- paste(fname)
+pdf(out,width=7.5,height=5)
+
+labels <- unique(indata$classname)
+labeldf <- data.frame("classname"=labels,"labelind"=array(1:length(labels)))
+indata <- merge(indata,labeldf,by="classname")
+
+gg = ggplot(data=indata, aes(x = labelind, y = classval,group=interaction(labelind,treatment),
+                             fill=treatment)) + geom_boxplot()
+
+gg <- gg + theme_bw() + 
+          theme(panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                axis.line = element_line(colour = "black"))
+
+gg <- gg + theme(axis.ticks.length=unit(-0.25, "cm"), 
+                 axis.text.x = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")), 
+                 axis.text.y = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")),
+                 text=element_text(size=18))
+
+
+
+gg <- gg + scale_x_continuous(breaks=unique(indata$labelind),
+                              labels=labels,
+                              sec.axis = dup_axis(labels=NULL,name = waiver()))
+gg <- gg + scale_y_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
+
+gg <- gg + theme(plot.margin=margin(1,0,0.5,0.5,"cm"))
+
+
+gg <- gg + ggtitle(title) + xlab(xlabel) + ylab(ylabel)
+
+gg <- gg + theme(plot.title=element_text(vjust=3,face="bold",size=24))
+
+gg
+
+dev.off()
+
+```
+
+Bar chart with one per category
+
+```{r}
+
+
+# Input data ####################################
+indata <- xdf2 %>%
+  gather(classname,classval)
+
+
+fname <- 'Bar.pdf'
+title <- 'Sample title'
+
+xlabel <- 'Sample X Data'
+ylabel <- 'Sample Y Data'
+
+#################################################
+
+
+meandf <- aggregate(indata$classval,list(indata$classname),mean)
+meandf <- plyr::rename(meandf,c("Group.1"="classname","x"="classval"))
+
+sddf <- aggregate(indata$classval,list(indata$classname),sd)
+sddf <- plyr::rename(sddf,c("Group.1"="classname","x"="sd"))
+
+indata <- merge(meandf,sddf,by="classname")
+
+out <- paste(fname)
+pdf(out,width=7.5,height=5)
+
+labels <- unique(indata$classname)
+labeldf <- data.frame("classname"=labels,"labelind"=array(1:length(labels)))
+indata <- merge(indata,labeldf,by="classname")
+
+gg = ggplot(indata, aes(x = labelind, y = classval)) + geom_bar(stat='identity') +
+      geom_errorbar(aes(ymin=classval-sd,ymax=classval+sd),width=0.2)
+
+gg <- gg + theme_bw() + 
+          theme(panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                axis.line = element_line(colour = "black"))
+
+gg <- gg + theme(axis.ticks.length=unit(-0.25, "cm"), 
+                 axis.text.x = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")), 
+                 axis.text.y = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")),
+                 text=element_text(size=18))
+
+
+
+gg <- gg + scale_x_continuous(breaks=unique(indata$labelind),
+                              labels=labels,
+                              sec.axis = dup_axis(labels=NULL,name = waiver()))
+gg <- gg + scale_y_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
+
+gg <- gg + theme(plot.margin=margin(1,1,0.5,0.5,"cm"))
+
+
+gg <- gg + ggtitle(title) + xlab(xlabel) + ylab(ylabel)
+
+gg <- gg + theme(plot.title=element_text(vjust=3,face="bold",size=24))
+
+gg
+
+
+dev.off()
+
+```
+
+Bar Chart with two per category
+```{r}
+
+# Input data ####################################
+indata <- xdf3 %>%
+  gather(classname,classval,-treatment)
+
+
+fname <- 'Bar2.pdf'
+title <- 'Sample title'
+
+xlabel <- 'Sample X Data'
+ylabel <- 'Sample Y Data'
+
+#################################################
+
+
+meandf <- aggregate(classval~classname+treatment,indata,mean)
+
+
+sddf <- aggregate(classval~classname+treatment,indata,sd)
+
+indata <- merge(meandf,sddf,by=c("classname","treatment"))
+
+indata <- plyr::rename(indata,c("classname"="classname",
+                                "treatment"="treatment",
+                                "classval.x"="classval",
+                                "classval.y"="sd"))
+
+
+out <- paste(fname)
+pdf(out,width=7.5,height=5)
+
+labels <- unique(indata$classname)
+labeldf <- data.frame("classname"=labels,"labelind"=array(1:length(labels)))
+indata <- merge(indata,labeldf,by="classname")
+
+gg = ggplot(indata, aes(x = labelind, y = classval,
+                             fill=treatment)) + 
+      geom_bar(stat='identity',position=position_dodge()) +
+      geom_errorbar(aes(ymin=classval-sd,ymax=classval+sd),width=0.2,
+                    position=position_dodge(0.9))
+
+gg <- gg + theme_bw() + 
+          theme(panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                axis.line = element_line(colour = "black"))
+
+gg <- gg + theme(axis.ticks.length=unit(-0.25, "cm"), 
+                 axis.text.x = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")), 
+                 axis.text.y = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")),
+                 text=element_text(size=18))
+
+
+
+gg <- gg + scale_x_continuous(breaks=unique(indata$labelind),
+                              labels=labels,
+                              sec.axis = dup_axis(labels=NULL,name = waiver()))
+gg <- gg + scale_y_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
+
+gg <- gg + theme(plot.margin=margin(1,1,0.5,0.5,"cm"))
+
+
+gg <- gg + ggtitle(title) + xlab(xlabel) + ylab(ylabel)
+
+gg <- gg + theme(plot.title=element_text(vjust=3,face="bold",size=24))
+
+gg
+
+
+dev.off()
+
+```
+
+Line
+
+
+```{r}
+
+
+
+# Input data ####################################
+indata <- xdf4
+
+fname <- 'Line.pdf'
+title <- 'Sample title'
+
+xlabel <- 'Sample X Data'
+ylabel <- 'Sample Y Data'
+
+#################################################
+
+
+out <- paste(fname)
+pdf(out,width=7.5,height=5)
+
+gg = ggplot(indata, aes_string(x=colnames(indata)[1],y=colnames(indata)[2])) + geom_line()
+
+gg <- gg + theme_bw() + 
+          theme(panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                axis.line = element_line(colour = "black"))
+
+gg <- gg + theme(axis.ticks.length=unit(-0.25, "cm"), 
+                 axis.text.x = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")), 
+                 axis.text.y = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")),
+                 text=element_text(size=18))
+
+
+gg <- gg + scale_x_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
+gg <- gg + scale_y_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
+
+gg <- gg + theme(plot.margin=margin(1,2,0.5,0.5,"cm"))
+
+
+gg <- gg + ggtitle(title) + xlab(xlabel) + ylab(ylabel)
+
+gg <- gg + theme(plot.title=element_text(vjust=3,face="bold",size=24))
+
+gg
+
+dev.off()
+
+
+
+```
+
+
+line plot w/2 class
+
+```{r}
+
+
+# Input data ####################################
+indata <- xdf5 %>%
+  gather(classname,classval,-index)
+
+
+fname <- 'Line2.pdf'
+title <- 'Sample title'
+
+xlabel <- 'Sample X Data'
+ylabel <- 'Sample Y Data'
+
+#################################################
+
+
+
+out <- paste(fname)
+pdf(out,width=7.5,height=5)
+
+gg = ggplot(indata, aes_string(y=colnames(indata)[3],x=colnames(indata)[1],color=colnames(indata)[2])) + geom_line()
+
+gg <- gg + theme_bw() + 
+          theme(panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                axis.line = element_line(colour = "black"))
+
+gg <- gg + theme(axis.ticks.length=unit(-0.25, "cm"), 
+                 axis.text.x = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")), 
+                 axis.text.y = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")),
+                 text=element_text(size=18))
+
+
+gg <- gg + scale_x_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
+gg <- gg + scale_y_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
+
+gg <- gg + theme(plot.margin=margin(1,0,0.5,0.5,"cm"))
+
+
+gg <- gg + ggtitle(title) + xlab(xlabel) + ylab(ylabel)
+
+gg <- gg + theme(plot.title=element_text(vjust=3,face="bold",size=24))
+
+gg
+
+dev.off()
+
+```
+
