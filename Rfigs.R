@@ -127,7 +127,7 @@ gg <- gg + theme(axis.ticks.length=unit(-0.25, "cm"),
                  axis.text.x = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")), 
                  axis.text.y = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")),
                  text=element_text(size=12)) +
-            scale_color_grey(start=0.8, end=0.2)
+            scale_color_grey(start=0.8, end=0.4)
 
 gg <- gg + scale_x_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
 gg <- gg + scale_y_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
@@ -231,7 +231,7 @@ gg <- gg + theme(axis.ticks.length=unit(-0.25, "cm"),
                  axis.text.x = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")), 
                  axis.text.y = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")),
                  text=element_text(size=12)) +
-            scale_fill_grey(start=0.8, end=0.2)
+            scale_fill_grey(start=0.8, end=0.4)
 
 
 
@@ -363,7 +363,7 @@ gg <- gg + theme_bw() +
           theme(panel.grid.major = element_blank(),
                 panel.grid.minor = element_blank(),
                 axis.line = element_line(colour = "black")) +
-          scale_fill_grey(start=0.8, end=0.2)
+          scale_fill_grey(start=0.8, end=0.4)
 
 gg <- gg + theme(axis.ticks.length=unit(-0.25, "cm"), 
                  axis.text.x = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")), 
@@ -470,7 +470,7 @@ gg <- gg + theme(axis.ticks.length=unit(-0.25, "cm"),
                  axis.text.x = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")), 
                  axis.text.y = element_text(margin=unit(c(0.5,0.5,0.5,0.5), "cm")),
                  text=element_text(size=12)) + 
-            scale_color_grey(start=0.8, end=0.2)
+            scale_color_grey(start=0.8, end=0.4)
 
 
 gg <- gg + scale_x_continuous(sec.axis = dup_axis(labels=NULL,name = waiver()))
